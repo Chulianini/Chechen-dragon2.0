@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chechens & Dragons - Crónicas de Reinos</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root { --oro: #d4af37; --borde: #8b4513; --fondo: #f4e4bc; }
+        body { background-color: var(--fondo); font-family: 'MedievalSharp', cursive; color: #2c1b0e; margin: 0; padding: 10px; line-height: 1.4; }
+        .container { max-width: 600px; margin: auto; border: 5px double var(--borde); padding: 15px; background: rgba(255,255,255,0.4); min-height: 90vh; }
+        
+        /* Login */
+        .login-screen { text-align: center; margin-top: 50px; }
+        input { padding: 12px; width: 70%; border: 2px solid var(--borde); margin-bottom: 10px; font-family: inherit; }
+        button { padding: 10px 25px; background: var(--borde); color: white; border: none; cursor: pointer; font-family: inherit; }
+
+        /* Navegación */
+        .nav-menu { display: none; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--borde); padding-bottom: 10px; margin-bottom: 15px; }
+        .nav-btn { background: #d2b48c; border: 1px solid var(--borde); padding: 8px 15px; margin-right: 5px; cursor: pointer; font-family: inherit; }
+        .nav-btn.active { background: var(--borde); color: white; }
+
+        /* Secciones */
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .active { display: block; }
+
+        /* Estilos Categoría 1 */
+        .header-reino { text-align: center; margin-bottom: 20px; }
+        .escudo { width: 120px; height: 120px; border: 3px solid var(--borde); background: #eee; object-fit: contain; }
+        .foto-rey { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--borde); object-fit: cover; }
+        .info-card { background: rgba(255,255,255,0.6); border: 1px solid var(--borde); padding: 15px; margin-top: 15px; border-radius: 8px; }
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .sub-item { background: #e9dcc3; padding: 10px; text-align: center; border: 1px solid #c0a080; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Pantalla de Inicio -->
+    <div id="login" class="login-screen">
+        <h1>📜 Chechens & Dragons</h1>
+        <p>Introduce tu sello real</p>
+        <input type="password" id="pass" placeholder="Clave del Reino...">
+        <br>
+        <button onclick="entrar()">Acceder a la Corte</button>
+    </div>
+
+    <!-- Menú de Pestañas (Iremos añadiendo del 1 al 9) -->
+    <div id="menu" class="nav-menu">
+        <button class="nav-btn active" onclick="cambiarTab(1)">Vista General</button>
+        <button class="nav-btn" onclick="cambiarTab(2)">Cat. 2</button> <!-- Marcador para la siguiente -->
+    </div>
+
+    <!-- CONTENIDO -->
+    <div id="cuerpo" style="display: none;">
+        
+        <!-- CATEGORÍA 1: VISTA GENERAL -->
+        <div id="tab1" class="tab-content active">
+            <div class="header-reino">
+                <img id="img-escudo" class="escudo" src="" alt="Escudo">
+                <h2 id="txt-reino" style="margin: 10px 0; text-transform: uppercase;"></h2>
+            </div>
+
+            <div class="info-card" style="display: flex; align-items: center; gap: 15px;">
+                <img id="img-rey" class="foto-rey" src="" alt="Rey">
+                <div>
+                    <span style="font-size: 0.8rem; color: #704020;">Soberano de la Estirpe</span>
+                    <h3 id="txt-rey" style="margin: 0;"></h3>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3 style="margin-top: 0;">🏛️ Capital: <span id="txt-capital"></span></h3>
+                <div class="sub-grid">
+                    <div class="sub-item">
+                        <small>Fortificación</small><br>
+                        <strong id="txt-forti"></strong>
+                    </div>
+                    <div class="sub-item">
+                        <small>Área Visión</small><br>
+                        <strong id="txt-vision"></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // BASE DE DATOS (Aquí es donde editarás tú cada turno)
+    const reinos = {
+        "gorrinos": {
+            nombre: "Clan Gorrinos",
+            escudo: "https://via.placeholder.com/150?text=ESCUDO",
+            rey: "Er Mazte Melacome Senior",
+            reyFoto: "https://via.placeholder.com/150?text=REY",
+            capital: "Peña Gorda Colorá",
+            fortificacion: "Nivel 4",
+            vision: "3 Hexágonos"
+        }
+    };
+
+    function entrar() {
+        const p = document.getElementById('pass').value;
+        if (reinos[p]) {
+            render(reinos[p]);
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+            document.getElementById('cuerpo').style.display = 'block';
+        } else {
+            alert("Acceso denegado. Los centinelas te vigilan.");
+        }
+    }
+
+    function render(datos) {
+        // Inyectar datos en Categoría 1
+        document.getElementById('txt-reino').innerText = datos.nombre;
+        document.getElementById('img-escudo').src = datos.escudo;
+        document.getElementById('txt-rey').innerText = datos.rey;
+        document.getElementById('img-rey').src = datos.reyFoto;
+        document.getElementById('txt-capital').innerText = datos.capital;
+        document.getElementById('txt-forti').innerText = datos.fortificacion;
+        document.getElementById('txt-vision').innerText = datos.vision;
+    }
+
+    function cambiarTab(num) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab' + num).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
