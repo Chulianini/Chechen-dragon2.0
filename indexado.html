@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chechens & Dragons - Portal Real</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        :root { --oro: #d4af37; --borde: #8b4513; --fondo: #f4e4bc; }
+        body { background-color: var(--fondo); font-family: 'MedievalSharp', cursive; color: #2c1b0e; margin: 0; padding: 10px; }
+        .container { max-width: 600px; margin: auto; border: 5px double var(--borde); padding: 15px; background: rgba(255,255,255,0.4); min-height: 95vh; }
+        
+        /* Login */
+        .login-screen { text-align: center; margin-top: 50px; }
+        input { padding: 12px; width: 80%; border: 2px solid var(--borde); margin-bottom: 10px; font-family: inherit; font-size: 1.1rem; }
+        button { padding: 10px 25px; background: var(--borde); color: white; border: none; cursor: pointer; font-family: inherit; font-size: 1.1rem; }
+
+        /* Navegación */
+        .nav-menu { display: none; overflow-x: auto; white-space: nowrap; border-bottom: 2px solid var(--borde); padding-bottom: 10px; margin-bottom: 15px; }
+        .nav-btn { background: #d2b48c; border: 1px solid var(--borde); padding: 8px 15px; margin-right: 5px; cursor: pointer; font-family: inherit; }
+        .nav-btn.active { background: var(--borde); color: white; }
+
+        /* Secciones */
+        .tab-content { display: none; }
+        .active { display: block; }
+
+        /* Estilos Cat 1 */
+        .header-reino { text-align: center; margin-bottom: 20px; }
+        .escudo { width: 100px; height: 100px; border: 3px solid var(--borde); background: #fff; object-fit: contain; border-radius: 10px; }
+        .foto-rey { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--borde); object-fit: cover; }
+        .info-card { background: rgba(255,255,255,0.6); border: 1px solid var(--borde); padding: 15px; margin-top: 15px; border-radius: 8px; }
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .sub-item { background: #e9dcc3; padding: 10px; text-align: center; border: 1px solid #c0a080; border-radius: 4px; }
+
+        /* Estilos Cat 2: Economía */
+        .cat-titulo { background: var(--borde); color: white; padding: 5px 10px; margin: 20px 0 10px 0; font-size: 0.9rem; text-transform: uppercase; border-radius: 4px; }
+        .recurso-card { display: flex; align-items: center; background: rgba(255,255,255,0.7); border: 1px solid var(--borde); margin-bottom: 8px; padding: 10px; border-radius: 8px; }
+        .grafica-circular { width: 55px; height: 55px; border-radius: 50%; margin-right: 15px; border: 2px solid var(--borde); flex-shrink: 0; }
+        .desglose-txt { font-size: 0.85rem; flex-grow: 1; }
+        .total-txt { font-weight: bold; font-size: 1rem; color: var(--borde); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="login" class="login-screen">
+        <h1>📜 Chechens & Dragons</h1>
+        <p>Introduce tu sello real para acceder</p>
+        <input type="password" id="pass" placeholder="Clave del Reino...">
+        <br><br>
+        <button onclick="entrar()">Entrar en la Corte</button>
+    </div>
+
+    <div id="menu" class="nav-menu">
+        <button class="nav-btn active" onclick="cambiarTab(1)">Vista General</button>
+        <button class="nav-btn" onclick="cambiarTab(2)">Economía</button>
+        <button class="nav-btn" disabled>Cat. 3...</button>
+    </div>
+
+    <div id="cuerpo" style="display: none;">
+        
+        <!-- CATEGORÍA 1: VISTA GENERAL -->
+        <div id="tab1" class="tab-content active">
+            <div class="header-reino">
+                <img id="img-escudo" class="escudo" src="" alt="Escudo">
+                <h2 id="txt-reino" style="margin: 10px 0;"></h2>
+            </div>
+            <div class="info-card" style="display: flex; align-items: center; gap: 15px;">
+                <img id="img-rey" class="foto-rey" src="" alt="Rey">
+                <div>
+                    <span style="font-size: 0.8rem; color: #704020;">Soberano Actual</span>
+                    <h3 id="txt-rey" style="margin: 0;"></h3>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3 style="margin: 0;">🏛️ Capital: <span id="txt-capital"></span></h3>
+                <div class="sub-grid">
+                    <div class="sub-item"><small>Fortificación</small><br><strong id="txt-forti"></strong></div>
+                    <div class="sub-item"><small>Área Visión</small><br><strong id="txt-vision"></strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORÍA 2: ECONOMÍA -->
+        <div id="tab2" class="tab-content">
+            <h3 style="text-align:center; margin-bottom: 5px;">📊 Tesorería Real</h3>
+            <div id="contenedor-economia"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const reinos = {
+        "gorrinos": {
+            nombre: "Clan Gorrinos",
+            escudo: "https://via.placeholder.com/100?text=ESCUDO",
+            rey: "Er Mazte Melacome Senior",
+            reyFoto: "https://via.placeholder.com/100?text=REY",
+            capital: "Peña Gorda Colorá",
+            fortificacion: "Nivel 4",
+            vision: "3 Hexágonos",
+            economia: [
+                // Grupo 1
+                { nombre: "ORO", cat: 1, total: 1000, colores: ["#ffd700", "#b8860b"], origenes: [{et: "Minas", v: 700}, {et: "Tributo", v: 300}] },
+                { nombre: "POB", cat: 1, total: 500, colores: ["#ff7f50", "#a52a2a"], origenes: [{et: "Nativos", v: 450}, {et: "Esclavos", v: 50}] },
+                { nombre: "CRI", cat: 1, total: 200, colores: ["#90ee90", "#228b22"], origenes: [{et: "Granjas", v: 200}] },
+                { nombre: "POL", cat: 1, total: 100, colores: ["#dda0dd", "#800080"], origenes: [{et: "Altar", v: 100}] },
+                // Grupo 2
+                { nombre: "MAD", cat: 2, total: 400, colores: ["#deb887", "#8b4513"], origenes: [{et: "Bosque", v: 400}] },
+                { nombre: "PIE", cat: 2, total: 300, colores: ["#a9a9a9", "#696969"], origenes: [{et: "Cantera", v: 300}] },
+                { nombre: "MET", cat: 2, total: 150, colores: ["#ced4da", "#495057"], origenes: [{et: "Fundición", v: 150}] },
+                { nombre: "TEL", cat: 2, total: 80, colores: ["#fff5f1", "#e9ecef"], origenes: [{et: "Telares", v: 80}] },
+                // Grupo 3
+                { nombre: "COM", cat: 3, total: 600, colores: ["#f4a460", "#d2691e"], origenes: [{et: "Mercado", v: 400}, {et: "Rutas", v: 200}] },
+                { nombre: "HER", cat: 3, total: 50, colores: ["#708090", "#2f4f4f"], origenes: [{et: "Forja", v: 50}] },
+                { nombre: "CUE", cat: 3, total: 120, colores: ["#bc8f8f", "#8b4513"], origenes: [{et: "Curtidor", v: 120}] },
+                { nombre: "MON", cat: 3, total: 30, colores: ["#00ced1", "#008b8b"], origenes: [{et: "Puerto", v: 30}] }
+            ]
+        }
+    };
+
+    function entrar() {
+        const p = document.getElementById('pass').value;
+        if (reinos[p]) {
+            render(reinos[p]);
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+            document.getElementById('cuerpo').style.display = 'block';
+        } else { alert("Clave incorrecta."); }
+    }
+
+    function render(datos) {
+        // Cargar Cat 1
+        document.getElementById('txt-reino').innerText = datos.nombre;
+        document.getElementById('img-escudo').src = datos.escudo;
+        document.getElementById('txt-rey').innerText = datos.rey;
+        document.getElementById('img-rey').src = datos.reyFoto;
+        document.getElementById('txt-capital').innerText = datos.capital;
+        document.getElementById('txt-forti').innerText = datos.fortificacion;
+        document.getElementById('txt-vision').innerText = datos.vision;
+
+        // Cargar Cat 2 (Gráficas)
+        const contenedor = document.getElementById('contenedor-economia');
+        contenedor.innerHTML = "";
+        let catPrevia = 0;
+        const nombresCat = ["Vitales (ORO, POB, CRI, POL)", "Construcción (MAD, PIE, MET, TEL)", "Suministros (COM, HER, CUE, MON)"];
+
+        datos.economia.forEach(res => {
+            if (res.cat !== catPrevia) {
+                catPrevia = res.cat;
+                contenedor.innerHTML += `<div class="cat-titulo">${nombresCat[catPrevia-1]}</div>`;
+            }
+
+            let acumulado = 0;
+            let gradiente = res.origenes.map((o, i) => {
+                let inicio = (acumulado / res.total) * 100;
+                acumulado += o.v;
+                let fin = (acumulado / res.total) * 100;
+                return `${res.colores[i % res.colores.length]} ${inicio}% ${fin}%`;
+            }).join(", ");
+
+            contenedor.innerHTML += `
+                <div class="recurso-card">
+                    <div class="grafica-circular" style="background: conic-gradient(${gradiente})"></div>
+                    <div class="desglose-txt">
+                        <span class="total-txt">${res.nombre}: ${res.total}</span><br>
+                        ${res.origenes.map(o => `${o.et}: ${o.v}`).join(" | ")}
+                    </div>
+                </div>`;
+        });
+    }
+
+    function cambiarTab(num) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab' + num).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+</body>
+</html>
